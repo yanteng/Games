@@ -30,7 +30,8 @@ module.exports = {
         test: /\.less$/,
         use: [
           { loader: 'vue-style-loader' },
-          { loader: 'css-loader' }
+          { loader: 'css-loader' },
+          { loader: 'less-loader' }
         ]
       },
       {

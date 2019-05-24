@@ -21,6 +21,7 @@ module.exports = {
     ],
     "rules": {
         'vue/html-self-closing': 'off',
+        'vue/singleline-html-element-content-newline': 'off',
         'vue/no-unused-vars': 'error',
         "vue/max-attributes-per-line": ["error", {
             "singleline": 3,

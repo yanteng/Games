@@ -1,15 +1,21 @@
 export default {
   props: {
     startAction: String,
-    coverUrl: String
+    cover: String,
+    title: String
   },
   data() {
     return {
       bgImage: {
-        backgroundImage: `url('${this.coverUrl}')`
-      }
+        backgroundImage: `url('${this.cover}')`
+      },
+      maskDisplayed: false
     }
   },
   methods: {
+    displayMask: function(isDisplay) {
+      this.maskDisplayed = isDisplay;
+      console.log(isDisplay)
+    }
   },
 }
