@@ -5,23 +5,11 @@ export const gameList = [
   {
     title: "Tetris",
     cover: "/image/tetris-cover.jpg",
-    actions: [
-      {
-        name: "start",
-        icon: "",
-        rounter: ""
-      }
-    ]
+    route: "/tetris"
   },
   {
     title: "Snake",
     cover: "/image/snake-cover.png",
-    actions: [
-      {
-        name: "start",
-        icon: "",
-        rounter: ""
-      }
-    ]
+    route: "/snake"
   }
 ]

@@ -2,7 +2,8 @@ export default {
   props: {
     startAction: String,
     cover: String,
-    title: String
+    title: String,
+    route: String,
   },
   data() {
     return {
@@ -15,7 +16,9 @@ export default {
   methods: {
     displayMask: function(isDisplay) {
       this.maskDisplayed = isDisplay;
-      console.log(isDisplay)
+    },
+    play: function() {
+      this.$router.push(this.route)
     }
   },
 }

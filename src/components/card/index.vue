@@ -8,7 +8,7 @@
     <div class="mask" :class="{'mask-displayed': maskDisplayed}">
       <div class="title">{{ title }}</div>
       <div class="action share"></div>
-      <div class="action start"></div>
+      <div class="action start" @click="play('/tetris')"></div>
     </div>
   </div>
 </template>
