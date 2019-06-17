@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="app-container">
     <transition name="slide">
       <router-view class="view"></router-view>
     </transition>
@@ -7,7 +7,7 @@
 </template>
 
 <style lang="less" scoped>
-.container {
+.app-container {
   .slide-enter{
     top: 100%;
     transform: translateY(100%);
@@ -21,4 +21,10 @@
   }
 }
 </style>
+<style lang="less">
+@import url('./share/style.less');
 
+html{
+  font-size: ~"@{base-font-size}px";
+}
+</style>

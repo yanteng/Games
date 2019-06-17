@@ -1,0 +1,9 @@
+@base-font-size: 16;
+@screen-split-size: 756px;
+@large-screen: ~"(min-width: @{screen-split-size})";
+@small-screen: ~"(max-width: @{screen-split-size})";
+
+.rem-px(@property, @size) {
+  @rm-value: @size / @base-font-size;
+  @{property}: ~"@{rm-value}rem";
+}

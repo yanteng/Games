@@ -28,7 +28,7 @@ function getSpeedByGameLevel(level) {
 }
 
 const getTetroRect = (tetro) => {
-  const anchor = tetro.anchor[tetro.curAnchor];
+  const anchor = tetro.anchors[tetro.curAnchorIndex];
   const y1 = tetro.position[0] - anchor[0];
   const x1 = tetro.position[1] - anchor[1];
   const y2 = y1 + tetro.shape.length - 1;
@@ -81,6 +81,11 @@ export const Game = function() {
         break;
     }
     if (!isAvailablePosition(this.mainPanel, tempTetro)) {
+      if (directive === MOVE_DIRECTIVE.DOWN) {
+        fixTetro();
+        update();
+        this.tetro = generateTetro();
+      }
       return false;
     }
     this.tetro = tempTetro;
@@ -106,7 +111,17 @@ export const Game = function() {
     this.move(MOVE_DIRECTIVE.DOWN);
     setTimeout(dropDown, getSpeedByGameLevel(this.level));
   };
-
+  // fix current tetro
+  const fixTetro = () => {
+    this.tetro = this.tetro.map(row => row.map(state => BLOCK_STATE.FIXED));
+  };
   // update mainPanel with current tetro
-  const update = () => {};
+  const update = () => {
+    const { y1, x1 } = getTetroRect(this.tetro);
+    this.tetro.forEach((row, rowIndex) => {
+      row.forEach((state, colIndex) => {
+        this.mainPanel[y1 + rowIndex][x1 + colIndex] = state;
+      });
+    });
+  };
 };

@@ -35,9 +35,9 @@ const O = () => ({
 
 // clockwise rotation a tetro
 const rotation = function(tetro) {
-  if (tetro.anchor.length > 1) {
+  if (tetro.anchors.length > 1) {
     // eslint-disable-next-line no-param-reassign
-    tetro.curAnchor = (tetro.curAnchor + 1) % tetro.anchor.length;
+    tetro.curAnchorIndex = (tetro.curAnchorIndex + 1) % tetro.anchors.length;
     // eslint-disable-next-line no-param-reassign
     tetro.shape = tetro.shape[0].map((col, i) => tetro.shape.map(row => row[i]).reverse());
   }
@@ -46,9 +46,9 @@ const rotation = function(tetro) {
 const generateTetro = function(mainPanelWidth = 0) {
   const tetroType = [S, INV_S, L, INV_L, O, I, T];
   const tetro = tetroType[Math.floor(Math.random() * tetroType.length)]();
-  tetro.curAnchor = 0;
-  const rotationNum = Math.floor(Math.random() * tetro.anchor.length);
-  tetro.position = [tetro.anchor[rotationNum][0], mainPanelWidth / 2];
+  tetro.curAnchorIndex = 0;
+  const rotationNum = Math.floor(Math.random() * tetro.anchors.length);
+  tetro.position = [tetro.anchors[rotationNum][0], mainPanelWidth / 2];
   new Array(rotationNum).forEach((i) => {
     rotation(tetro);
   });
