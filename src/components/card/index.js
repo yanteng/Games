@@ -8,17 +8,17 @@ export default {
   data() {
     return {
       bgImage: {
-        backgroundImage: `url('${this.cover}')`
+        backgroundImage: `url('${this.cover}')`,
       },
-      maskDisplayed: false
-    }
+      maskDisplayed: false,
+    };
   },
   methods: {
-    displayMask: function(isDisplay) {
+    displayMask(isDisplay) {
       this.maskDisplayed = isDisplay;
     },
-    play: function() {
-      this.$router.push(this.route)
-    }
+    play() {
+      this.$router.push(this.route);
+    },
   },
-}
+};

@@ -29,7 +29,7 @@
 }
 </style>
 <style lang="less">
-@import url('./share/style.less');
+@import url('./share/less/varibles.less');
 
 html{
   font-size: ~"@{base-font-size}px";

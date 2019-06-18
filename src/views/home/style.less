@@ -1,11 +1,18 @@
+@import url("../../share/less/varibles.less");
+
 .container {
-  padding: 50px;
+  .rem-px(padding, 50);
   width: 100vw;
   height: 100vh;
   background-color: #212121;
   display: flex;
   box-sizing: border-box;
+  @media @small-screen {
+    grid-template-columns: 1fr;
+  }
+
   .game-card {
-    margin: 32px;
+    .rem-px(margin, 32);
+    
   }
 }

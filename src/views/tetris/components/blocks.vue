@@ -25,6 +25,7 @@ export default {
   methods: {
     getStateClass(state) {
       if (state === BLOCK_STATE.FIXED) return 'fixed';
+      if (state === BLOCK_STATE.ACTIVE) return 'active';
       return 'empty';
     },
   },
@@ -33,20 +34,50 @@ export default {
 
 <style lang="less" scoped>
 @import url('../share/style.less');
-@import url('../../../share/style.less');
+@import url("../../../share/less/varibles.less");
 
 .block-container {
   border: 1px black solid;
   .rem-px(margin, 5);
   display: grid;
   grid-template-rows: repeat(20, 5%);
+
   .row {
     display: grid;
     grid-template-columns: repeat(10, 10%);
-    margin: 1px;
+    .rem-px(margin-bottom, 1);
+    
+    &:first-child {
+      .rem-px(margin-top, 1);
+    }
+
     .block {
       border: 1px black solid;
-      margin: 1px;
+      .rem-px(margin-right, 1);
+      position: relative;
+
+      &:first-child {
+        .rem-px(margin-left, 1);
+      }
+
+      &::after {
+        content: "";
+        width: 80%;
+        height: 80%;
+        background-color: black;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .active {
+      opacity: 1;
+    }
+
+    .empty {
+      opacity: 0.1;
     }
   }
 }

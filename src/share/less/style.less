@@ -1,12 +1,3 @@
-@base-font-size: 16;
-@screen-split-size: 420px;
-@large-screen: ~"(min-width: @{screen-split-size})";
-@small-screen: ~"(max-width: @{screen-split-size})";
-
-.rem-px(@property, @size) {
-  @rm-value: @size / @base-font-size;
-  @{property}: ~"@{rm-value}rem";
-}
 
 /*自定义属性 保持纵横比*/
 @supports (--custom:property) {

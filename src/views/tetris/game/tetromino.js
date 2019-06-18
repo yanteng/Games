@@ -1,3 +1,5 @@
+import { BLOCK_STATE, MOVE_DIRECTIVE } from './const';
+
 const S = () => ({
   shape: [[0, 1, 1], [1, 1, 0]],
   anchors: [[0, 1], [1, 0]],
@@ -55,4 +57,66 @@ const generateTetro = function(mainPanelWidth = 0) {
   return tetro;
 };
 
-export { generateTetro, rotation };
+const getTetroRect = (tetro) => {
+  const anchor = tetro.anchors[tetro.curAnchorIndex];
+  const y1 = tetro.position[0] - anchor[0];
+  const x1 = tetro.position[1] - anchor[1];
+  const y2 = y1 + tetro.shape.length - 1;
+  const x2 = x1 + tetro.shape[0].length - 1;
+  return {
+    y1, x1, y2, x2,
+  };
+};
+
+const deepCopyTetro = origin => JSON.parse(JSON.stringify(origin));
+
+const isAvailablePosition = (mainPanel, tetro) => {
+  const {
+    y1, x1, y2, x2,
+  } = getTetroRect(tetro);
+  if (x1 < 0 || x2 >= mainPanel[0].length) return false;
+  if (y2 >= mainPanel.length) return false;
+  const { shape } = tetro;
+  for (let i = 0; i < shape.length; i++) {
+    for (let j = 0; j < shape[i].length; j++) {
+      if (mainPanel[y1 + i][x1 + j] !== BLOCK_STATE.EMPTY && shape[i][j] !== BLOCK_STATE.EMPTY) {
+        return false;
+      }
+    }
+  }
+  return true;
+};
+
+const moveTetro = function(directive = MOVE_DIRECTIVE.DOWN, tetro, blocks) {
+  const tempTetro = deepCopyTetro(tetro);
+  switch (directive) {
+    case MOVE_DIRECTIVE.DOWN:
+      tempTetro.position[0] += 1;
+      break;
+    case MOVE_DIRECTIVE.LEFT:
+      tempTetro.position[1] -= 1;
+      break;
+    case MOVE_DIRECTIVE.RIGHT:
+      tempTetro.position[1] += 1;
+      break;
+    case MOVE_DIRECTIVE.ROTATION:
+      rotation(tempTetro);
+      break;
+    default:
+      break;
+  }
+  if (!isAvailablePosition(blocks, tempTetro)) {
+    return false;
+  }
+  Object.assign(tetro, tempTetro);
+  return true;
+};
+
+export {
+  generateTetro,
+  rotation,
+  deepCopyTetro,
+  isAvailablePosition,
+  getTetroRect,
+  moveTetro,
+};
