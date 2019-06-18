@@ -1,9 +1,28 @@
 @base-font-size: 16;
-@screen-split-size: 756px;
+@screen-split-size: 420px;
 @large-screen: ~"(min-width: @{screen-split-size})";
 @small-screen: ~"(max-width: @{screen-split-size})";
 
 .rem-px(@property, @size) {
   @rm-value: @size / @base-font-size;
   @{property}: ~"@{rm-value}rem";
+}
+
+/*自定义属性 保持纵横比*/
+@supports (--custom:property) {
+  [style*="--aspect-ratio"] {
+    position: relative;
+    & > :first-child {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+    }
+    &::before {
+      content: "";
+      display: block;
+      padding-bottom: calc(100% / (var(--aspect-ratio)));
+    }  
+  }
 }

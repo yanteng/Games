@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="block-container">
     <div v-for="(row,rowIndex) in data" :key="rowIndex" class="row">
       <div
         v-for="(state, colIndex) in row"
@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { BLOCK_STATE } from '../const';
+import { BLOCK_STATE } from '../game/const';
 
 export default {
   name: 'Blocks',
@@ -32,16 +32,21 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.container {
-  background-color: #9ead86;
-  padding-bottom: 200%;
+@import url('../share/style.less');
+@import url('../../../share/style.less');
+
+.block-container {
+  border: 1px black solid;
+  .rem-px(margin, 5);
+  display: grid;
+  grid-template-rows: repeat(20, 5%);
   .row {
-    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(10, 10%);
+    margin: 1px;
     .block {
-      box-sizing: border-box;
-      width: 
-    }
-    .fixed {
+      border: 1px black solid;
+      margin: 1px;
     }
   }
 }

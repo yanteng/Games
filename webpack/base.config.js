@@ -1,6 +1,7 @@
 const path = require('path');
 const { VueLoaderPlugin } = require('vue-loader');
-const HTMLWebpackPlugin = require('html-webpack-plugin')
+const HTMLWebpackPlugin = require('html-webpack-plugin');
+
 const resolvePath = relativePath => path.resolve(__dirname, relativePath);
 module.exports = {
   mode: 'development',
@@ -10,29 +11,21 @@ module.exports = {
     path: resolvePath('../dist'),
   },
   resolve: {
-    extensions: ['.vue', '.js']
+    extensions: ['.vue', '.js'],
   },
   module: {
     rules: [
       {
         test: /\.vue$/,
-        use: [
-          { loader: 'vue-loader' }
-        ]
+        use: [{ loader: 'vue-loader' }],
       },
       {
         test: /\.js$/,
-        use: [
-          { loader: 'babel-loader' }
-        ]
+        use: [{ loader: 'babel-loader' }],
       },
       {
         test: /\.less$/,
-        use: [
-          { loader: 'vue-style-loader' },
-          { loader: 'css-loader' },
-          { loader: 'less-loader' }
-        ]
+        use: [{ loader: 'vue-style-loader' }, { loader: 'css-loader' }, { loader: 'less-loader' }],
       },
       {
         test: /\.(png|svg|jpg|gif)$/,
@@ -40,15 +33,12 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
-              name: 'image/[name].[ext]'
-            }
-          }
-        ]
-      }
-    ]
+              name: 'image/[name].[ext]',
+            },
+          },
+        ],
+      },
+    ],
   },
-  plugins: [
-    new VueLoaderPlugin(),
-    new HTMLWebpackPlugin({ template: "./src/index.html" }),
-  ]
-}
+  plugins: [new VueLoaderPlugin(), new HTMLWebpackPlugin({ template: './src/index.html' })],
+};
