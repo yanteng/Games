@@ -102,6 +102,10 @@ const moveTetro = function(directive = MOVE_DIRECTIVE.DOWN, tetro, blocks) {
     case MOVE_DIRECTIVE.ROTATION:
       rotation(tempTetro);
       break;
+    case MOVE_DIRECTIVE.HARD_DROP:
+      hardDrop(blocks, tempTetro);
+      Object.assign(tetro, tempTetro);
+      return true;
     default:
       break;
   }
@@ -112,6 +116,28 @@ const moveTetro = function(directive = MOVE_DIRECTIVE.DOWN, tetro, blocks) {
   return true;
 };
 
+const findFullLines = function(blocks) {
+  const fullLineRowIndexs = [];
+  blocks.forEach((row, rowIndex) => {
+    const fixedBlocks = row.filter(state => state === BLOCK_STATE.FIXED);
+    if (fixedBlocks.length === row.length) {
+      fullLineRowIndexs.push(rowIndex);
+    }
+  });
+  return fullLineRowIndexs;
+};
+
+const hardDrop = function(blocks, tetro) {
+  let isMove = false;
+  while (isAvailablePosition(blocks, tetro)) {
+    // eslint-disable-next-line no-param-reassign
+    tetro.position[0] += 1;
+    isMove = true;
+  }
+  // eslint-disable-next-line no-param-reassign
+  if (isMove) tetro.position[0] -= 1;
+};
+
 export {
   generateTetro,
   rotation,
@@ -119,4 +145,6 @@ export {
   isAvailablePosition,
   getTetroRect,
   moveTetro,
+  findFullLines,
+  hardDrop,
 };

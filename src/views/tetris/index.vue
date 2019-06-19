@@ -30,6 +30,7 @@ import {
   generateTetro,
   getTetroRect,
   moveTetro,
+  findFullLines,
 } from './game/tetromino';
 
 export default {
@@ -51,6 +52,7 @@ export default {
   mounted() {
     this.init();
     window.addEventListener('keydown', this.onKeyDown);
+    window.addEventListener('keyup', this.onKeyUp);
   },
   methods: {
     init() {
@@ -60,35 +62,40 @@ export default {
       );
       this.tetro = generateTetro(GAME_SIZE_WIDTH);
     },
-    clearActiveBlocks() {
-      this.blocks.forEach((row, rowIndex) => {
-        const newRow = this.blocks[rowIndex].slice(0);
-        row.forEach((state, colIndex) => {
-          if (state === BLOCK_STATE.ACTIVE) {
-            newRow[colIndex] = BLOCK_STATE.EMPTY;
-          }
-        });
-        this.$set(this.blocks, rowIndex, newRow);
-      });
-    },
     drawActiveBlocks() {
       const { y1, x1 } = getTetroRect(this.tetro);
       this.tetro.shape.forEach((row, rowIndex) => {
-        const newRow = this.blocks[y1 + rowIndex].slice(0);
+        const yPos = y1 + rowIndex;
+        const newRow = this.blocks[yPos].slice(0);
         row.forEach((state, colIndex) => {
-          newRow[x1 + colIndex] = state;
+          const xPos = x1 + colIndex;
+          if (newRow[xPos] === BLOCK_STATE.EMPTY) {
+            newRow[xPos] = state;
+          }
         });
-        this.$set(this.blocks, y1 + rowIndex, newRow);
+        this.$set(this.blocks, yPos, newRow);
       });
     },
     getSpeedByGameLevel(level) {
       return 1000 - level * 25;
     },
-    onKeyDown(event) {
-      if (event.key === 'Enter') {
-        this.onStart();
-        return;
+    onKeyUp(event) {
+      if (event.key !== 'Enter' && this.state !== GAME_STATE.RUNNING) return;
+      switch (event.key) {
+        case 'Enter':
+          this.onStart();
+          break;
+        case 'ArrowUp':
+          this.move(MOVE_DIRECTIVE.ROTATION);
+          break;
+        case ' ':
+          this.move(MOVE_DIRECTIVE.HARD_DROP);
+          break;
+        default:
+          break;
       }
+    },
+    onKeyDown(event) {
       if (this.state !== GAME_STATE.RUNNING) return;
       switch (event.key) {
         case 'ArrowRight':
@@ -97,9 +104,6 @@ export default {
         case 'ArrowLeft':
           this.move(MOVE_DIRECTIVE.LEFT);
           break;
-        case 'ArrowUp':
-          this.move(MOVE_DIRECTIVE.ROTATION);
-          break;
         case 'ArrowDown':
           this.move(MOVE_DIRECTIVE.DOWN);
           break;
@@ -107,11 +111,53 @@ export default {
           break;
       }
     },
+    changeBlocksState(originState, destState) {
+      this.blocks.forEach((row, rowIndex) => {
+        const newRow = this.blocks[rowIndex].slice(0);
+        let changed = false;
+        row.forEach((state, colIndex) => {
+          if (state === originState) {
+            newRow[colIndex] = destState;
+            changed = true;
+          }
+        });
+        if (changed) {
+          this.$set(this.blocks, rowIndex, newRow);
+        }
+      });
+    },
+    clearActiveBlocks() {
+      this.changeBlocksState(BLOCK_STATE.ACTIVE, BLOCK_STATE.EMPTY);
+    },
+    freezeActiveBlocks() {
+      this.changeBlocksState(BLOCK_STATE.ACTIVE, BLOCK_STATE.FIXED);
+    },
+    removeFullLine() {
+      const fullLinesRowIndexs = findFullLines(this.blocks);
+      fullLinesRowIndexs.forEach((rowIndex) => {
+        this.blocks.splice(rowIndex, 1);
+        this.blocks.unshift(new Array(GAME_SIZE_WIDTH).fill(BLOCK_STATE.EMPTY));
+      });
+      return fullLinesRowIndexs.length;
+    },
+    scoring() {
+      this.freezeActiveBlocks();
+      this.score += this.removeFullLine();
+      this.tetro = generateTetro(GAME_SIZE_WIDTH);
+    },
     move(directives = MOVE_DIRECTIVE.DOWN) {
       this.clearActiveBlocks();
-      moveTetro(directives, this.tetro, this.blocks);
+      const moveSuccess = moveTetro(directives, this.tetro, this.blocks);
       this.drawActiveBlocks();
+      if (directives === MOVE_DIRECTIVE.HARD_DROP) {
+        this.scoring();
+        return;
+      }
+      // 没有传参数表示 自动降落. 只有在 harddrop 和自动降落中得分
       if (arguments.length === 0) {
+        if (!moveSuccess) {
+          this.scoring();
+        }
         this.timer = setTimeout(
           () => this.move(),
           this.getSpeedByGameLevel(this.level),

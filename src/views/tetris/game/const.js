@@ -21,4 +21,5 @@ export const MOVE_DIRECTIVE = {
   LEFT: 'left',
   RIGHT: 'right',
   ROTATION: 'rotation',
+  HARD_DROP: 'hard_drop',
 };
