@@ -66,6 +66,7 @@ export default {
       const { y1, x1 } = getTetroRect(this.tetro);
       this.tetro.shape.forEach((row, rowIndex) => {
         const yPos = y1 + rowIndex;
+        if (yPos < 0) return;
         const newRow = this.blocks[yPos].slice(0);
         row.forEach((state, colIndex) => {
           const xPos = x1 + colIndex;

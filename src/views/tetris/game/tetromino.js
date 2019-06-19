@@ -50,10 +50,10 @@ const generateTetro = function(mainPanelWidth = 0) {
   const tetro = tetroType[Math.floor(Math.random() * tetroType.length)]();
   tetro.curAnchorIndex = 0;
   const rotationNum = Math.floor(Math.random() * tetro.anchors.length);
-  tetro.position = [tetro.anchors[rotationNum][0], mainPanelWidth / 2];
-  new Array(rotationNum).forEach((i) => {
+  (new Array(rotationNum)).fill(0).forEach((i) => {
     rotation(tetro);
   });
+  tetro.position = [tetro.anchors[rotationNum][0] - tetro.shape.length, mainPanelWidth / 2];
   return tetro;
 };
 
@@ -79,6 +79,8 @@ const isAvailablePosition = (mainPanel, tetro) => {
   const { shape } = tetro;
   for (let i = 0; i < shape.length; i++) {
     for (let j = 0; j < shape[i].length; j++) {
+      // eslint-disable-next-line no-continue
+      if (y1 + i < 0) continue;
       if (mainPanel[y1 + i][x1 + j] !== BLOCK_STATE.EMPTY && shape[i][j] !== BLOCK_STATE.EMPTY) {
         return false;
       }
