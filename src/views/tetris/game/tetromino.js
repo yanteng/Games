@@ -50,7 +50,7 @@ const generateTetro = function(mainPanelWidth = 0) {
   const tetro = tetroType[Math.floor(Math.random() * tetroType.length)]();
   tetro.curAnchorIndex = 0;
   const rotationNum = Math.floor(Math.random() * tetro.anchors.length);
-  (new Array(rotationNum)).fill(0).forEach((i) => {
+  (new Array(rotationNum)).fill(0).forEach(() => {
     rotation(tetro);
   });
   tetro.position = [tetro.anchors[rotationNum][0] - tetro.shape.length, mainPanelWidth / 2];
@@ -91,6 +91,7 @@ const isAvailablePosition = (mainPanel, tetro) => {
 
 const moveTetro = function(directive = MOVE_DIRECTIVE.DOWN, tetro, blocks) {
   const tempTetro = deepCopyTetro(tetro);
+  let canDrop = false;
   switch (directive) {
     case MOVE_DIRECTIVE.DOWN:
       tempTetro.position[0] += 1;
@@ -105,9 +106,9 @@ const moveTetro = function(directive = MOVE_DIRECTIVE.DOWN, tetro, blocks) {
       rotation(tempTetro);
       break;
     case MOVE_DIRECTIVE.HARD_DROP:
-      hardDrop(blocks, tempTetro);
-      Object.assign(tetro, tempTetro);
-      return true;
+      canDrop = hardDrop(blocks, tempTetro);
+      if (canDrop) Object.assign(tetro, tempTetro);
+      return canDrop;
     default:
       break;
   }
@@ -130,14 +131,16 @@ const findFullLines = function(blocks) {
 };
 
 const hardDrop = function(blocks, tetro) {
-  let isMove = false;
+  let moveStep = 0;
   while (isAvailablePosition(blocks, tetro)) {
     // eslint-disable-next-line no-param-reassign
     tetro.position[0] += 1;
-    isMove = true;
+    moveStep++;
   }
   // eslint-disable-next-line no-param-reassign
-  if (isMove) tetro.position[0] -= 1;
+  if (moveStep) tetro.position[0] -= 1;
+  // 没移动表示当前的 tetro 是不可移动的,返回 false
+  return moveStep - 1 > 0;
 };
 
 export {

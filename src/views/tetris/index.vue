@@ -4,7 +4,7 @@
     <div class="screen" style="--aspect-ratio:3/4;">
       <div>
         <blocks :data="blocks"></blocks>
-        <info></info>
+        <info :score="score" :level="level"></info>
       </div>
     </div>
     <div class="controller">
@@ -32,6 +32,10 @@ import {
   moveTetro,
   findFullLines,
 } from './game/tetromino';
+import {
+  music, 
+  MUSIC_NAME,
+} from './game/music';
 
 export default {
   components: {
@@ -42,7 +46,7 @@ export default {
     return {
       blocks: [],
       score: 0,
-      state: GAME_STATE.STOPPED,
+      gameState: GAME_STATE.STOPPED,
       level: 1,
       tetro: null,
       startBtnText: '开始',
@@ -56,10 +60,14 @@ export default {
   },
   methods: {
     init() {
+      music.loadMusic();
       // this 2d array using for game data
       this.blocks = new Array(GAME_SIZE_HEIGHT).fill(
         new Array(GAME_SIZE_WIDTH).fill(BLOCK_STATE.EMPTY),
       );
+      this.newTetro();
+    },
+    newTetro() {
       this.tetro = generateTetro(GAME_SIZE_WIDTH);
     },
     drawActiveBlocks() {
@@ -81,7 +89,7 @@ export default {
       return 1000 - level * 25;
     },
     onKeyUp(event) {
-      if (event.key !== 'Enter' && this.state !== GAME_STATE.RUNNING) return;
+      if (event.key !== 'Enter' && this.gameState !== GAME_STATE.RUNNING) return;
       switch (event.key) {
         case 'Enter':
           this.onStart();
@@ -97,7 +105,7 @@ export default {
       }
     },
     onKeyDown(event) {
-      if (this.state !== GAME_STATE.RUNNING) return;
+      if (this.gameState !== GAME_STATE.RUNNING) return;
       switch (event.key) {
         case 'ArrowRight':
           this.move(MOVE_DIRECTIVE.RIGHT);
@@ -132,6 +140,8 @@ export default {
     },
     freezeActiveBlocks() {
       this.changeBlocksState(BLOCK_STATE.ACTIVE, BLOCK_STATE.FIXED);
+      // 在固定活动砖块是,如果发现当前的 tetro 还在界外,则认为固定砖块失败,表示游戏结束
+      return getTetroRect(this.tetro).y1 >= 0;
     },
     removeFullLine() {
       const fullLinesRowIndexs = findFullLines(this.blocks);
@@ -139,41 +149,64 @@ export default {
         this.blocks.splice(rowIndex, 1);
         this.blocks.unshift(new Array(GAME_SIZE_WIDTH).fill(BLOCK_STATE.EMPTY));
       });
+      if (fullLinesRowIndexs.length !== 0) {
+        music.play(MUSIC_NAME.CLEAR);
+      }
       return fullLinesRowIndexs.length;
     },
     scoring() {
-      this.freezeActiveBlocks();
+      if (!this.freezeActiveBlocks()) {
+        this.gameState = GAME_STATE.STOPPED;
+        music.play(MUSIC_NAME.GAME_OVER);
+        clearTimeout(this.timer);
+        return;
+      }
       this.score += this.removeFullLine();
-      this.tetro = generateTetro(GAME_SIZE_WIDTH);
+      this.newTetro();
+    },
+    autoDrop() {
+      this.timer = setTimeout(
+        () => this.move(),
+        this.getSpeedByGameLevel(this.level),
+      );
     },
     move(directives = MOVE_DIRECTIVE.DOWN) {
       this.clearActiveBlocks();
       const moveSuccess = moveTetro(directives, this.tetro, this.blocks);
       this.drawActiveBlocks();
-      if (directives === MOVE_DIRECTIVE.HARD_DROP) {
-        this.scoring();
-        return;
-      }
-      // 没有传参数表示 自动降落. 只有在 harddrop 和自动降落中得分
+      // 没有传参数表示自动降落. 只有在 harddrop 和自动降落中得分
       if (arguments.length === 0) {
+        this.autoDrop();
         if (!moveSuccess) {
           this.scoring();
         }
-        this.timer = setTimeout(
-          () => this.move(),
-          this.getSpeedByGameLevel(this.level),
-        );
+      } else if (directives === MOVE_DIRECTIVE.HARD_DROP) {
+        music.play(MUSIC_NAME.HARD_DROP);
+        this.scoring();
+      } else if (directives === MOVE_DIRECTIVE.ROTATION) {
+        music.play(MUSIC_NAME.ROTATE);
+      } else {
+        music.play(MUSIC_NAME.MOVE);
       }
     },
+    start() {
+      if (this.gameState === GAME_STATE.STOPPED) {
+        music.play(MUSIC_NAME.START);
+      }
+      this.startBtnText = '暂停';
+      this.move();
+      this.gameState = GAME_STATE.RUNNING;
+    },
+    pause() {
+      this.startBtnText = '开始';
+      this.gameState = GAME_STATE.PAUSED;
+      clearTimeout(this.timer);
+    },
     onStart() {
-      if (this.state === GAME_STATE.RUNNING) {
-        this.startBtnText = '开始';
-        this.state = GAME_STATE.PAUSED;
-        clearTimeout(this.timer);
-      } else if (this.state === GAME_STATE.PAUSED || this.state === GAME_STATE.STOPPED) {
-        this.startBtnText = '暂停';
-        this.move();
-        this.state = GAME_STATE.RUNNING;
+      if (this.gameState === GAME_STATE.RUNNING) {
+        this.pause();
+      } else if (this.gameState === GAME_STATE.PAUSED || this.gameState === GAME_STATE.STOPPED) {
+        this.start();
       }
     },
   },

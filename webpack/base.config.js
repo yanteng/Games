@@ -28,12 +28,12 @@ module.exports = {
         use: [{ loader: 'vue-style-loader' }, { loader: 'css-loader' }, { loader: 'less-loader' }],
       },
       {
-        test: /\.(png|svg|jpg|gif)$/,
+        test: /\.(png|svg|jpg|gif|mp3)$/,
         use: [
           {
             loader: 'file-loader',
             options: {
-              name: 'image/[name].[ext]',
+              name: 'static/[name].[ext]',
             },
           },
         ],
