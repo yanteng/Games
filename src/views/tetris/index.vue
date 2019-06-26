@@ -8,9 +8,18 @@
       </div>
     </div>
     <div class="controller">
-      <div class="tetro-controller"></div>
       <div class="settings">
-        <div class="start-btn" @click="onStart">{{ startBtnText }}</div>
+        <div class="rect-button start-btn" @click="onStart">{{ startBtnText }}</div>
+        <div class="rect-button mute-btn" @click="onMute">静音</div>
+      </div>
+      <div class="tetro-controller">
+        <div class="circle-button hard-drop-btn" @click="move(MOVE_DIRECTIVE.HARD_DROP)"></div>
+        <div class="direction-btns">
+          <div class="circle-button direction-btn" @click="move(MOVE_DIRECTIVE.ROTATION)"></div>
+          <div class="circle-button direction-btn" @click="move(MOVE_DIRECTIVE.RIGHT)"></div>
+          <div class="circle-button direction-btn" @click="move(MOVE_DIRECTIVE.LEFT)"></div>
+          <div class="circle-button direction-btn" @click="move(MOVE_DIRECTIVE.DOWN)"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -33,7 +42,7 @@ import {
   findFullLines,
 } from './game/tetromino';
 import {
-  music, 
+  music,
   MUSIC_NAME,
 } from './game/music';
 
@@ -44,6 +53,7 @@ export default {
   },
   data() {
     return {
+      MOVE_DIRECTIVE,
       blocks: [],
       score: 0,
       gameState: GAME_STATE.STOPPED,
@@ -119,6 +129,9 @@ export default {
         default:
           break;
       }
+    },
+    onMute() {
+      music.isMute = !music.isMute;
     },
     changeBlocksState(originState, destState) {
       this.blocks.forEach((row, rowIndex) => {
@@ -255,17 +268,72 @@ export default {
     }
   }
 
+  .rect-button {
+    cursor: pointer;
+    .rem-px(padding-left, 6);
+    .rem-px(padding-right, 6);
+    .rem-px(padding-top, 8);
+    .rem-px(padding-bottom, 8);
+    .rem-px(font-size, 13);
+    color: #fff;
+    background-color: #2196f3;
+    box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12);
+    border-radius: 4px;
+    transition:box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    .rem-px(margin, 8);
+  }
+
+  .circle-button {
+    border-radius: 50%;
+    background-color: #2196f3;
+    box-shadow: 0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12);
+  }
+
+  .rect-button:active {
+    box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12);
+  }
+
   .controller {
+    width: 100%;
     .settings {
+      display: flex;
+      .rem-px(padding-left, 30);
+      .rem-px(padding-top, 10);
+
       .start-btn {
-        .rem-px(border-radius, 2);
-        background-color: #2dc421;
-        color: white;
+        background-color: #4caf50;
+      }
+
+      .mute-btn {
+        background-color: #4caf50;
       }
     }
     .tetro-controller {
+      display: none;
+
       @media @small-screen {
-        display: none;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+
+        .hard-drop-btn {
+          .rem-px(width, 90);
+          .rem-px(height, 90);
+        }
+
+        .direction-btns {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: 1fr 1fr;
+          .rem-px(grid-column-gap, 10);
+          .rem-px(grid-row-gap, 10);
+          transform: rotate(45deg);
+
+          .direction-btn {
+            .rem-px(width, 60);
+            .rem-px(height, 60);
+          }
+        }
       }
     }
   }
