@@ -1,9 +1,5 @@
 <template>
   <div class="info-container">
-    <div class="max-value">
-      <div>Max Value</div>
-      <div>1</div>
-    </div>
     <div>
       <div>score</div>
       <div>{{ score }}</div>

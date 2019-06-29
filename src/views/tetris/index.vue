@@ -96,7 +96,7 @@ export default {
       });
     },
     getSpeedByGameLevel(level) {
-      return 1000 - level * 25;
+      return 600 - level * 25;
     },
     onKeyUp(event) {
       if (event.key !== 'Enter' && this.gameState !== GAME_STATE.RUNNING) return;
