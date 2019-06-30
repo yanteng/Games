@@ -19,7 +19,7 @@ const music = {
   },
   loadMusic() {
     this.context = new (window.AudioContext || window.webkitAudioContext)();
-    const audioSrc = '/static/music.mp3';
+    const audioSrc = 'static/music.mp3';
 
     const onSuccess = (request) => {
       const audioData = request.response;
